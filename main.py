@@ -32,6 +32,8 @@ class MemoLayout(BoxLayout): # BoxLayout을 상속받아 앱의 레이아웃 정
 
     def save_memo(self, instance):
         memo = self.memo_input.text # memo_input에 입력된 메모를 가져와 memo 변수로 지정
+        with open("memo.txt", "a",encoding="utf-8") as memo_file:
+            memo_file.write(memo + "\n")        
         print("메모가 저장됨!!:", memo) # 콘솔에 memo를 출력
         self.memo_input.text = "" # 변수 초기화
 
