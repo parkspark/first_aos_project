@@ -6,6 +6,7 @@ from kivy.uix.boxlayout import BoxLayout # ui
 from kivy.uix.textinput import TextInput # ui
 from kivy.uix.button import Button # ui
 import os # 메모 삭제때 os.remove 이용하려고 임포트
+import glob # 앱 시작시 메모 파일 읽어오기 위해서
 
 resource_add_path('.')
 LabelBase.register(DEFAULT_FONT, "./MaruBuriTTF/MaruBuri-Regular.ttf")
@@ -19,7 +20,8 @@ class MemoLayout(BoxLayout): # BoxLayout을 상속받아 앱의 레이아웃 정
         super(MemoLayout, self).__init__(**kwargs)
         self.orientation = "vertical" #orientation 속성을 vertical로 설정 : 위에서 아래로 위젯 배치
 
-        self.memos = {} #메모를 저장할 딕셔너리 <- 왜 딕셔너리?
+        self.memos = {} # 메모를 저장할 딕셔너리 <- 왜 딕셔너리?
+        self.load_memo_files() # 이미 저장된 메모 파일들 읽기
 
         self.memo_input = TextInput( # TextInput 위젯 : 메모 작성 텍스트 입력 상자 
             hint_text="메모를 입력하세요...", # hint_text : 안내 문구
@@ -50,6 +52,16 @@ class MemoLayout(BoxLayout): # BoxLayout을 상속받아 앱의 레이아웃 정
         delete_button = Button(text="삭제", on_press=self.on_delete_button) #delete
         button_layout.add_widget(delete_button)
         
+    
+    def load_memo_files(self):
+        memo_files = glob.glob("memo_*.txt")  # 메모 파일들 찾기
+        for memo_file in memo_files:
+            memo_id = int(memo_file[5:-4])  # 파일 이름에서 메모 ID 추출
+            with open(memo_file, "r", encoding="utf-8") as file:
+                memo_content = file.read()
+            self.memos[memo_id] = memo_content  # 메모 내용을 딕셔너리에 저장    
+        
+    
     # 각 버튼에 대한 콜백함수
     def on_read_button(self, instance):
         memo_id = int(self.memo_id_input.text)
